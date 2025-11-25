@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Sample API automation suite" verbose="1"
+       configfailurepolicy="continue" thread-count="2" parallel="tests">
+
+    <test name="TC_01 Sample JIRA automation test"
+          annotations="JDK" enabled="true" >
+        <classes>
+            <class name="apiAutomation.testcases.JIRASampleTest"/>
+        </classes>
+    </test>
+    <test name="TC_02 Sample OAuth automation test parallel"
+          annotations="JDK" enabled="true" >
+        <classes>
+            <class name="apiAutomation.testcases.OAuthTest"/>
+        </classes>
+    </test>
+
+
+</suite>

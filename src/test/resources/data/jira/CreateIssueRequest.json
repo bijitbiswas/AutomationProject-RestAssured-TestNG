@@ -1,0 +1,12 @@
+{
+  "fields": {
+    "project": {
+      "key": "SCRUM"
+    },
+    "summary": "Placeholder summary - update in factory",
+    "issuetype": {
+      "name": "Bug"
+    }
+  }
+}
+
