@@ -1,60 +1,91 @@
 # API Automation Framework (Rest Assured + TestNG)
 
-This project is a reference implementation of a maintainable API testing framework
-using Rest Assured and TestNG. The goal is to keep tests highly readable while
-centralising configuration, data management, and HTTP client logic.
+This repository provides a ready-to-use API test automation framework built with Rest Assured and TestNG. It balances readability, maintainability, and speed so teams can focus on modelling API scenarios rather than framework plumbing.
 
-## Project Layout
+## Key Features
+- **Layered design** separating configuration, clients, data, and assertions for clean test code.
+- **Re-usable HTTP clients** that centralise authentication, headers, and request construction.
+- **Configurable environments** via property files or environment variables for quick context switches.
+- **Data factories & templates** to build dynamic payloads without duplication.
+- **Pluggable utilities** for logging, reporting, and request/response enrichment.
 
-- `src/test/java/apiAutomation/config` – environment configuration loader.
-- `src/test/java/apiAutomation/testbase` – base test class with common setup.
-- `src/test/java/apiAutomation/clients` – service specific API clients.
-- `src/test/java/apiAutomation/datafactory` – reusable test data builders.
-- `src/test/java/apiAutomation/utilities` – shared helpers (request builder, random data, JSON loader).
-- `src/test/resources/config` – environment-specific settings.
-- `src/test/resources/data` – structured test data templates.
+## Prerequisites
+- Java 11 or newer
+- Maven 3.8+
+- An IDE with TestNG support (IntelliJ IDEA recommended)
+- Network access to the APIs under test
 
-## Getting Started
-
-1. **Install dependencies**
-
+## Quick Start
+1. **Clone the project**
+   ```bash
+   git clone <repository-url>
+   cd AutomationProject-RestAssured-TestNG
+   ```
+2. **Install dependencies**
    ```bash
    mvn clean test -DskipTests
    ```
-
-2. **Configure environment variables or override properties**
-
-   Create/Update `src/test/resources/config/config.properties` or set the
-   following environment variables (preferred for secrets):
-
-   - `JIRA_BASEURI`
-   - `JIRA_BASEPATH`
-   - `JIRA_USEREMAIL`
-   - `JIRA_APITOKEN`
-   - `JIRA_BASICAUTHTOKEN` (optional – overrides email/token combination)
-   - `OAUTH_BASEURI`
-   - `OAUTH_CLIENTID`
-   - `OAUTH_CLIENTSECRET`
-
-   Any values missing at runtime will raise a clear error message.
-
-3. **Execute tests**
-
+3. **Configure environments**
+   - Update `src/test/resources/config/config.properties` with default values, or
+   - Provide overrides via environment variables (preferred for secrets).
+4. **Run all tests**
    ```bash
    mvn clean test
    ```
 
-## Extending the Framework
+## Project Structure
+- `src/test/java/apiAutomation/config` – configuration loaders + property management.
+- `src/test/java/apiAutomation/testbase` – shared TestNG hooks and request specification builders.
+- `src/test/java/apiAutomation/clients` – service-specific Rest Assured clients encapsulating endpoints.
+- `src/test/java/apiAutomation/datafactory` – builders for dynamic payloads and DTO generators.
+- `src/test/java/apiAutomation/utilities` – common helpers (request generator, JSON utilities, random data).
+- `src/test/resources/config` – environment specific property files.
+- `src/test/resources/data` – reusable payload templates.
 
-- Add new API clients under `clients/` to encapsulate endpoint logic.
-- Reuse `RequestGenerator` to build readable flows with sensible defaults.
-- Store complex payload templates under `src/test/resources/data` and load them
-  via `TestDataLoader`.
-- Create data factories for scenario-specific payload variations.
+## Configuration
+- Duplicate `config.properties` for each environment (`config-qa.properties`, etc.).
+- Map secrets to environment variables such as `API_BASE_URI`, `API_USERNAME`, `API_TOKEN`.
+- Reference variables in tests via the configuration loader so changes remain centralised.
 
-## Logging
+## Writing Your First API Test
+1. **Create a client** in `clients/` (or reuse an existing one):
+   - Define endpoint paths, authentication, and query parameters.
+   - Return typed responses or `ValidatableResponse` for assertions.
+2. **Author the test class** in `src/test/java/.../tests` extending `BaseTest`:
+   - Inject the client.
+   - Compose requests using builders or data factories.
+   - Assert status codes, headers, and payload content with TestNG.
+3. **Add test data** in the data factory or resources folder to keep test logic lean.
 
-Set `api.log.all=true` in `config.properties` (or `API_LOG_ALL=true` env var) to
-enable request/response logging for every call. Regardless of this flag, full
-payloads are logged automatically when an assertion fails.
+```java
+@Test
+public void shouldCreateTicket() {
+    TicketRequest request = TicketDataFactory.defaultTicket();
+    ValidatableResponse response = jiraClient.createTicket(request);
+    response.statusCode(201)
+            .body("key", notNullValue());
+}
+```
+
+## Test Data & Utilities
+- Store static payload templates under `src/test/resources/data` to reuse across suites.
+- Use data factories for scenario-specific variations and edge cases.
+- Utilities such as `RequestGenerator` and `TestDataLoader` standardise request creation and data access.
+
+## Logging & Reporting
+- Enable verbose logging by setting `api.log.all=true` in properties or `API_LOG_ALL=true` as an environment variable.
+- Failures automatically output the request and response to aid debugging.
+- Integrate with TestNG listeners or Allure for richer reports if required.
+
+## Continuous Integration Tips
+- Add `mvn clean test` to your CI pipeline with the correct environment profile.
+- Externalise secrets via CI variables; never commit credentials.
+- Run smoke tests on every pull request and schedule full regression suites nightly.
+
+## Helpful Commands
+- `mvn clean test -Dgroups=smoke` – run tagged smoke tests.
+- `mvn surefire-report:report-only` – generate TestNG HTML reports.
+- `mvn dependency:tree` – inspect library dependency graph.
+
+You now have everything you need to start crafting reliable, maintainable API tests quickly. Happy testing!
 
