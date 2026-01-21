@@ -43,15 +43,17 @@ This repository provides a ready-to-use API test automation framework built with
 - `src/test/resources/data` – reusable payload templates.
 
 ## Configuration
-- Duplicate `config.properties` for each environment (`config-qa.properties`, etc.).
-- Map secrets to environment variables such as `API_BASE_URI`, `API_USERNAME`, `API_TOKEN`.
-- Reference variables in tests via the configuration loader so changes remain centralised.
+- Create a new `.properties` file under `src/test/resources/config` as per API collections or envs.
+- Mention the `.properties` location in `ConfigurationProfile` as enum values.
+- Use `config.getProperty('<propertyName>)` in DataFactory classes by calling `ConfigurationManager.getInstance(ConfigurationProfile.JIRA);` 
+- Use `config.getProperty('<propertyName>)` in Client classes by overriding the `profile()` method from BaseClient class.
+- Default settings of `api.log.all` and `api.baseUri` is controlled from `defaultConfiguration.prperties`.
 
 ## Writing Your First API Test
 1. **Create a client** in `clients/` (or reuse an existing one):
    - Define endpoint paths, authentication, and query parameters.
    - Return typed responses or `ValidatableResponse` for assertions.
-2. **Author the test class** in `src/test/java/.../tests` extending `BaseTest`:
+2. **Author the test class** in `src/test/java/.../testcases` :
    - Inject the client.
    - Compose requests using builders or data factories.
    - Assert status codes, headers, and payload content with TestNG.
