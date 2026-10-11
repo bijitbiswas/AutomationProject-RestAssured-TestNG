@@ -49,10 +49,6 @@ public final class ConfigurationManager {
         );
     }
 
-    public String getBaseUri() {
-        return getProperty("api.baseUri");
-    }
-
     public boolean isLoggingEnabled() {
         return Boolean.parseBoolean(getPropertyAsOption("api.log.all").orElse("false"));
     }

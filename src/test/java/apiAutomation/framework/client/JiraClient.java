@@ -23,21 +23,22 @@ public class JiraClient extends BaseClient {
     }
 
     public CreateIssueResponse createIssue(CreateIssueRequest requestBody) {
-        RequestGenerator response = request()
-                .withBasePath(config.getProperty("jira.basePath"))
+        RequestGenerator generator = request()
+                .withBasePath(JiraEndpoints.BASE_PATH)
                 .withHeaders(defaultHeaders())
                 .withBody(requestBody)
                 .postRequest(JiraEndpoints.CREATE_ISSUE);
 
-        response.verifyStatusCode(201);
-        return response.as(CreateIssueResponse.class);
+        generator.verifyStatusCode(201);
+        return generator.as(CreateIssueResponse.class);
     }
 
     public void deleteIssue(String issueId) {
         request()
-                .withBasePath(config.getProperty("jira.basePath"))
+                .withBasePath(JiraEndpoints.BASE_PATH)
                 .withHeaders(defaultHeaders())
-                .deleteRequest(JiraEndpoints.issueById(issueId))
+                .withPathParam("issueId", issueId)
+                .deleteRequest(JiraEndpoints.ISSUE_BY_ID)
                 .verifyStatusCode(204);
     }
 

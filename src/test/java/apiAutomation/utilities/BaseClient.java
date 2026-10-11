@@ -19,14 +19,8 @@ public abstract class BaseClient {
      */
     protected RequestGenerator request() {
         String baseURIKey = profile().name().toLowerCase(Locale.ROOT) + ".baseUri";
-        try {
-            String baseURI = config.getProperty(baseURIKey);
-            return RequestGenerator.generateRequest(baseURI);
-        } catch (IllegalStateException e) {
-            System.out.println("UNABLE TO FIND  "+ baseURIKey +" INSIDE : " + profile().getResourcePath() +
-                    ". USING api.baseUri FROM : " + ConfigurationProfile.DEFAULT.getResourcePath());
-            return RequestGenerator.generateRequest();
-        }
+        String baseURI = config.getProperty(baseURIKey);
+        return RequestGenerator.generateRequest(baseURI);
     }
 
 }

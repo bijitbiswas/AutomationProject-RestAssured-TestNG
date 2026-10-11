@@ -24,20 +24,12 @@ public class RequestGenerator {
 
     private static final ConfigurationManager config = ConfigurationManager.getInstance();
     private static final boolean defaultIsLoggingEnabled = config.isLoggingEnabled();
-    private static final String defaultBaseURI = config.getBaseUri();
     private RequestSpecification requestSpec;
     private ValidatableResponse validatableResponse;
 
     private RequestGenerator(RequestSpecification baseSpec) {
         this.requestSpec = RestAssured.given()
                 .spec(baseSpec);
-    }
-
-    /**
-     * Generates a request with the framework base URI from configuration.
-     */
-    public static RequestGenerator generateRequest() {
-        return generateRequest(defaultBaseURI);
     }
 
     /**
@@ -123,47 +115,27 @@ public class RequestGenerator {
     }
 
     public RequestGenerator getRequest(String resourcePath) {
-        return getRequest(resourcePath, defaultIsLoggingEnabled);
-    }
-
-    public RequestGenerator getRequest(String resourcePath, boolean logResponse) {
-        execute(resourcePath, Method.GET, logResponse);
+        execute(resourcePath, Method.GET);
         return this;
     }
 
     public RequestGenerator postRequest(String resourcePath) {
-        return postRequest(resourcePath, defaultIsLoggingEnabled);
-    }
-
-    public RequestGenerator postRequest(String resourcePath, boolean logResponse) {
-        execute(resourcePath, Method.POST, logResponse);
+        execute(resourcePath, Method.POST);
         return this;
     }
 
     public RequestGenerator deleteRequest(String resourcePath) {
-        return deleteRequest(resourcePath, defaultIsLoggingEnabled);
-    }
-
-    public RequestGenerator deleteRequest(String resourcePath, boolean logResponse) {
-        execute(resourcePath, Method.DELETE, logResponse);
+        execute(resourcePath, Method.DELETE);
         return this;
     }
 
     public RequestGenerator putRequest(String resourcePath) {
-        return putRequest(resourcePath, defaultIsLoggingEnabled);
-    }
-
-    public RequestGenerator putRequest(String resourcePath, boolean logResponse) {
-        execute(resourcePath, Method.PUT, logResponse);
+        execute(resourcePath, Method.PUT);
         return this;
     }
 
     public RequestGenerator patchRequest(String resourcePath) {
-        return patchRequest(resourcePath, defaultIsLoggingEnabled);
-    }
-
-    public RequestGenerator patchRequest(String resourcePath, boolean logResponse) {
-        execute(resourcePath, Method.PATCH, logResponse);
+        execute(resourcePath, Method.PATCH);
         return this;
     }
 
@@ -191,7 +163,7 @@ public class RequestGenerator {
         return getResponse().as(clazz);
     }
 
-    private void execute(String resourcePath, Method method, boolean logResponse) {
+    private void execute(String resourcePath, Method method) {
         Response response = switch (method) {
             case GET -> requestSpec.when().get(resourcePath);
             case POST -> requestSpec.when().post(resourcePath);
@@ -200,9 +172,6 @@ public class RequestGenerator {
             case DELETE -> requestSpec.when().delete(resourcePath);
         };
         validatableResponse = response.then();
-        if (logResponse) {
-            validatableResponse.log().all();
-        }
     }
 
     private enum Method {

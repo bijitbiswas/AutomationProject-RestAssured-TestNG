@@ -6,7 +6,6 @@ import apiAutomation.framework.models.jiraModels.request.Issuetype;
 import apiAutomation.framework.models.jiraModels.request.Project;
 import apiAutomation.utilities.ConfigurationManager;
 import apiAutomation.utilities.ConfigurationProfile;
-import apiAutomation.utilities.TestDataLoader;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -35,25 +34,22 @@ public final class JiraDataFactory {
 
 
 
-    private static final String CREATE_ISSUE_REQUEST_TEMPLATE = "data/jira/CreateIssueRequest.json";
-    static ConfigurationManager config = ConfigurationManager.getInstance(ConfigurationProfile.JIRA);
-
-    private static CreateIssueRequest issueRequestTemplate() {
-        return TestDataLoader.load(CREATE_ISSUE_REQUEST_TEMPLATE, CreateIssueRequest.class);
-    }
+    private static final ConfigurationManager config = ConfigurationManager.getInstance(ConfigurationProfile.JIRA);
 
     public static CreateIssueRequest createIssueRequestBody() {
-
-        CreateIssueRequest request = issueRequestTemplate();
-        Fields fields = request.getFields();
-
-        Issuetype issueType = fields.getIssuetype();
-        Project project = fields.getProject();
-
+        Project project = new Project();
         project.setKey(config.getProperty("jira.projectKey"));
+
+        Issuetype issueType = new Issuetype();
         issueType.setName(config.getProperty("jira.issueType"));
 
+        Fields fields = new Fields();
+        fields.setProject(project);
+        fields.setIssuetype(issueType);
         fields.setSummary(randomBugSummary());
+
+        CreateIssueRequest request = new CreateIssueRequest();
+        request.setFields(fields);
         return request;
     }
 
